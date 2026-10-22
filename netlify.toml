@@ -6,7 +6,9 @@
   publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "22"
+  # Node 24+: nitro's file tracer (nf3) imports named exports from a CommonJS
+  # module, which fails on Node 22 ("Named export 'nodeFileTrace' not found").
+  NODE_VERSION = "24"
   NPM_FLAGS = "--no-audit --no-fund"
 
 # Required environment variables (Site configuration → Environment variables):
