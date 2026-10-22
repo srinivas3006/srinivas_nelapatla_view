@@ -1,0 +1,423 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+@import "lenis/dist/lenis.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-display: "Fraunces", "Cormorant Garamond", ui-serif, Georgia, serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+/*
+ * Design system definition.
+ *
+ * The @theme inline block maps CSS custom properties to Tailwind utility
+ * classes (e.g. --color-primary -> bg-primary, text-primary).
+ *
+ * The :root and .dark blocks define the actual color values using oklch.
+ * All colors MUST use oklch format.
+ *
+ * To add a new semantic color:
+ * 1. Add the variable to :root (light value) and .dark (dark value)
+ * 2. Register it in @theme inline as --color-<name>: var(--<name>)
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --radius: 0.875rem;
+  --background: #f9f4ee;
+  --foreground: #1a1a1a;
+
+  --card: #efefe5;
+  --card-foreground: #1a1a1a;
+  --popover: #efefe5;
+  --popover-foreground: #1a1a1a;
+
+  --primary: #457641;
+  --primary-foreground: #f9f4ee;
+
+  --accent: #5c7b61;
+  --accent-foreground: #f5f1e8;
+
+  --secondary: #33573d;
+  --secondary-foreground: #f5f1e8;
+
+  --muted: #efefe5;
+  --muted-foreground: #626d63;
+
+  --destructive: oklch(0.577 0.18 27);
+  --destructive-foreground: #f9f4ee;
+
+  --border: oklch(0.89 0.012 90);
+  --input: oklch(0.89 0.012 90);
+  --ring: #457641;
+
+  --chart-1: #457641;
+  --chart-2: #5c7b61;
+  --chart-3: #33573d;
+  --chart-4: #8a9a8c;
+  --chart-5: #1a1a1a;
+
+  --sidebar: #f9f4ee;
+  --sidebar-foreground: #1a1a1a;
+  --sidebar-primary: #457641;
+  --sidebar-primary-foreground: #f9f4ee;
+  --sidebar-accent: #efefe5;
+  --sidebar-accent-foreground: #1a1a1a;
+  --sidebar-border: oklch(0.89 0.012 90);
+  --sidebar-ring: #457641;
+
+  --shadow-soft: 0 1px 2px rgba(60, 50, 30, 0.04), 0 8px 24px rgba(60, 50, 30, 0.06);
+  --shadow-lift: 0 2px 4px rgba(60, 50, 30, 0.05), 0 20px 40px rgba(60, 50, 30, 0.1);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  /* Native smooth anchors only when Lenis isn't running (the two conflict). */
+  @media (prefers-reduced-motion: no-preference) {
+    html:not(.lenis) {
+      scroll-behavior: smooth;
+    }
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-feature-settings: "ss01", "cv11";
+  }
+  .font-display {
+    font-family: var(--font-display);
+    font-feature-settings: "ss01";
+    letter-spacing: -0.02em;
+  }
+}
+
+@utility shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+@utility shadow-lift {
+  box-shadow: var(--shadow-lift);
+}
+
+@keyframes pluto-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.025);
+  }
+}
+@keyframes pluto-wag {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* The custom cursor (components/motion/Cursor.tsx) replaces the native one,
+   except in text fields where the I-beam matters. */
+html.has-custom-cursor,
+html.has-custom-cursor * {
+  cursor: none !important;
+}
+html.has-custom-cursor :is(input, textarea, [contenteditable="true"]) {
+  cursor: text !important;
+}
+
+@keyframes pluto-hop {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+.animate-hop {
+  animation: pluto-hop 0.32s ease-in-out infinite;
+}
+
+/* ── Ambient motion ─────────────────────────────────────────────── */
+
+/* Background leaves sway and drift on long, offset loops. */
+@keyframes leaf-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(10px, -14px) rotate(6deg);
+  }
+  50% {
+    transform: translate(-6px, -24px) rotate(-4deg);
+  }
+  75% {
+    transform: translate(-12px, -8px) rotate(3deg);
+  }
+}
+.animate-leaf-drift {
+  animation: leaf-drift 12s ease-in-out infinite;
+}
+
+/* The hero backdrop slowly breathes and changes shape. */
+@keyframes blob-morph {
+  0%,
+  100% {
+    border-radius: 50% 50% 45% 45% / 55% 55% 45% 45%;
+  }
+  33% {
+    border-radius: 56% 44% 48% 52% / 50% 58% 42% 50%;
+  }
+  66% {
+    border-radius: 46% 54% 42% 58% / 58% 48% 52% 42%;
+  }
+}
+@keyframes blob-breathe {
+  0%,
+  100% {
+    scale: 1;
+  }
+  50% {
+    scale: 1.03;
+  }
+}
+.animate-blob {
+  animation:
+    blob-morph 14s ease-in-out infinite,
+    blob-breathe 7s ease-in-out infinite;
+}
+
+/* Pluto, sitting: mostly still, then a quick curious head tilt. */
+@keyframes pluto-curious {
+  0%,
+  78%,
+  100% {
+    transform: rotate(0deg);
+  }
+  82% {
+    transform: rotate(-8deg);
+  }
+  88% {
+    transform: rotate(6deg);
+  }
+  94% {
+    transform: rotate(-2deg);
+  }
+}
+.animate-curious {
+  animation: pluto-curious 6.5s ease-in-out 2s infinite;
+}
+
+/* Paper-like grain, painted once as a tiled background of the page root
+   (opacity baked into the tile). A blended full-screen overlay would force
+   the whole page to be recomposited on every animation frame. */
+.grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
+}
+
+/* Hold the hero blob's shape animation (it repaints) while it's off-screen. */
+[data-offscreen] .animate-blob {
+  animation-play-state: paused;
+}
+
+/* ── Hero entrances (Hero.tsx) ──────────────────────────────────────
+   CSS rather than JS so they run from first paint, before hydration.
+   --d staggers them; on a first visit they wait for the intro curtain. */
+.hero-in {
+  animation-duration: 0.8s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation-fill-mode: both;
+  animation-delay: var(--d, 0s);
+}
+html[data-intro="playing"] .hero-in {
+  animation-delay: calc(var(--d, 0s) + 1.6s);
+}
+.hero-rise {
+  animation-name: hero-rise;
+}
+.hero-word {
+  animation-name: hero-word;
+}
+.hero-pop {
+  animation-name: hero-pop;
+  animation-duration: 1.2s;
+}
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+@keyframes hero-word {
+  from {
+    transform: translateY(110%);
+  }
+}
+@keyframes hero-pop {
+  from {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+}
+
+/* Visible keyboard focus everywhere (the custom cursor is mouse-only). */
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-leaf-drift,
+  .animate-blob,
+  .animate-breathe,
+  .animate-float-soft,
+  .animate-hop,
+  .animate-curious,
+  .hero-in {
+    animation: none;
+  }
+}
+
+/* ── Intro loader (components/motion/IntroLoader.tsx) ─────────────────
+   Shown only while the inline script has marked a fresh first load as
+   html[data-intro="playing"] — never on repeat visits, client-side
+   navigation back home, reduced motion or without JS. */
+.intro {
+  animation: intro-out 0.7s cubic-bezier(0.76, 0, 0.24, 1) 1.4s forwards;
+}
+html:not([data-intro="playing"]) .intro {
+  display: none;
+}
+.intro-name {
+  animation: intro-reveal 1s cubic-bezier(0.65, 0, 0.35, 1) 0.2s both;
+}
+.intro-runner {
+  animation: intro-run 1s cubic-bezier(0.65, 0, 0.35, 1) 0.2s both;
+}
+.intro-line {
+  animation: intro-line 1s cubic-bezier(0.65, 0, 0.35, 1) 0.2s both;
+}
+@keyframes intro-reveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+/* The runner track spans the name, so translateX(100%) crosses it exactly. */
+@keyframes intro-run {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+@keyframes intro-line {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes intro-out {
+  to {
+    transform: translateY(-100%);
+    visibility: hidden;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .intro {
+    display: none;
+  }
+}
+
+/* Route changes (project card <-> detail) use the View Transitions API. */
+::view-transition-group(*) {
+  animation-duration: 0.55s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.35s;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+.animate-breathe {
+  animation: pluto-breathe 4s ease-in-out infinite;
+}
+.animate-float-soft {
+  animation: float-soft 6s ease-in-out infinite;
+}

@@ -1,0 +1,15 @@
+# Netlify build. vite.config.ts switches nitro to its `netlify` preset when
+# NETLIFY=true (set automatically on Netlify): static files go to dist/, the
+# SSR server to .netlify/functions-internal/ (picked up automatically).
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  NPM_FLAGS = "--no-audit --no-fund"
+
+# Required environment variables (Site configuration → Environment variables):
+#   SUPABASE_URL               https://<project>.supabase.co
+#   SUPABASE_SERVICE_ROLE_KEY  server-only; never prefix with VITE_
+#   ADMIN_PASSWORD             password for /admin
