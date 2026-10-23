@@ -25,6 +25,8 @@ export type DbProject = {
   links: { label: string; href: string }[];
   sort_order: number;
   is_published: boolean;
+  /** Optional short muted clip (mp4/webm URL) previewed on card hover. */
+  video?: string;
 };
 
 const CATEGORY_LABELS: Record<string, string> = {

@@ -862,6 +862,20 @@ function AdminDashboard() {
                             setContent({ ...content, projects: newP });
                           }}
                         />
+                        <label className="mt-3 block text-xs font-medium text-foreground">
+                          Hover video URL (optional, short muted .mp4/.webm)
+                        </label>
+                        <input
+                          type="url"
+                          value={proj.video ?? ""}
+                          placeholder="https://…/preview.mp4"
+                          onChange={(e) => {
+                            const newP = [...content.projects];
+                            newP[idx].video = e.target.value;
+                            setContent({ ...content, projects: newP });
+                          }}
+                          className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        />
                       </div>
                       <div className="space-y-4">
                         <div>

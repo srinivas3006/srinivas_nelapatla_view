@@ -1,10 +1,11 @@
 import { responsiveImage } from "@/lib/image";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { motion, useMotionValue, useScroll, useTransform } from "motion/react";
+import { motion, useMotionValue, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { DURATION, EASE_OUT, projectMediaTransition } from "@/lib/motion";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
+import { getLenis } from "@/lib/smooth-scroll";
 import { TiltCard } from "@/components/motion/Interactive";
 import { DESKTOP_QUERY, useMediaQuery } from "@/hooks/useMediaQuery";
 import { categoryLabel, type DbProject } from "@/lib/portfolio-content";
@@ -77,9 +78,14 @@ export function Projects({ projects }: { projects: DbProject[] }) {
   return (
     <ProjectsShell>
       {header}
-      <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Phones: swipeable snap carousel. sm and up: grid. */}
+      <div className="-mx-6 mt-12 flex snap-x snap-mandatory scroll-px-6 gap-4 overflow-x-auto px-6 pb-4 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-6 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4">
         {visible.map((p, i) => (
-          <Reveal key={p.id} delay={i * 0.06}>
+          <Reveal
+            key={p.id}
+            delay={i * 0.06}
+            className="w-[80vw] max-w-sm shrink-0 snap-start sm:w-auto sm:max-w-none"
+          >
             <ProjectCard project={p} />
           </Reveal>
         ))}
@@ -127,6 +133,30 @@ function HorizontalProjects({ header, projects }: { header: ReactNode; projects:
   const { scrollYProgress } = useScroll({ target: outerRef, offset: ["start start", "end end"] });
   const x = useTransform(() => -scrollYProgress.get() * distanceMV.get());
 
+  // Drag the row with the mouse: 1px of horizontal drag = 1px of page scroll,
+  // since the section's extra height equals the track's travel distance.
+  const drag = useRef<{ x: number; moved: number } | null>(null);
+  const suppressClick = useRef(false);
+  const onPointerDown = (e: PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType !== "mouse" || e.button !== 0) return;
+    drag.current = { x: e.clientX, moved: 0 };
+  };
+  const onPointerMove = (e: PointerEvent<HTMLDivElement>) => {
+    if (!drag.current) return;
+    const dx = e.clientX - drag.current.x;
+    drag.current.x = e.clientX;
+    drag.current.moved += Math.abs(dx);
+    if (drag.current.moved < 5) return;
+    const lenis = getLenis();
+    if (lenis) lenis.scrollTo(window.scrollY - dx, { immediate: true });
+    else window.scrollBy(0, -dx);
+  };
+  const endDrag = () => {
+    // A real drag shouldn't also open the project under the pointer.
+    suppressClick.current = (drag.current?.moved ?? 0) >= 5;
+    drag.current = null;
+  };
+
   return (
     <section
       id="work"
@@ -136,7 +166,21 @@ function HorizontalProjects({ header, projects }: { header: ReactNode; projects:
     >
       <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden py-16">
         <div className="mx-auto w-full max-w-7xl px-6">{header}</div>
-        <div ref={trackRef} className="mt-12 overflow-hidden">
+        <div
+          ref={trackRef}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={endDrag}
+          onPointerLeave={endDrag}
+          onDragStart={(e) => e.preventDefault()}
+          onClickCapture={(e) => {
+            if (!suppressClick.current) return;
+            suppressClick.current = false;
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+          className="mt-12 cursor-grab select-none overflow-hidden active:cursor-grabbing"
+        >
           <motion.div
             ref={rowRef}
             style={{ x }}
@@ -155,6 +199,17 @@ function HorizontalProjects({ header, projects }: { header: ReactNode; projects:
 }
 
 function ProjectCard({ project: p }: { project: DbProject }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const reduceMotion = useReducedMotion();
+  const playPreview = (play: boolean) => {
+    const v = videoRef.current;
+    if (!v || reduceMotion) return;
+    if (play) v.play().catch(() => {});
+    else {
+      v.pause();
+      v.currentTime = 0;
+    }
+  };
   return (
     <Link
       to="/projects/$slug"
@@ -168,11 +223,13 @@ function ProjectCard({ project: p }: { project: DbProject }) {
         <motion.div
           whileHover={{ y: -6 }}
           transition={{ duration: DURATION.fast }}
+          onMouseEnter={() => playPreview(true)}
+          onMouseLeave={() => playPreview(false)}
           className="group h-full overflow-hidden rounded-2xl border border-border bg-card shadow-soft hover:shadow-lift"
         >
           <div
             style={{ viewTransitionName: projectMediaTransition(p.slug) }}
-            className="aspect-[4/3] overflow-hidden bg-secondary"
+            className="relative aspect-[4/3] overflow-hidden bg-secondary"
           >
             {p.image ? (
               <motion.img
@@ -189,6 +246,19 @@ function ProjectCard({ project: p }: { project: DbProject }) {
               />
             ) : (
               <div className="h-full w-full bg-gradient-to-br from-primary/10 to-accent/20" />
+            )}
+            {/* Optional short clip that plays while the card is hovered. */}
+            {p.video && (
+              <video
+                ref={videoRef}
+                src={p.video}
+                muted
+                loop
+                playsInline
+                preload="none"
+                aria-hidden
+                className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+              />
             )}
           </div>
           <div className="p-5">

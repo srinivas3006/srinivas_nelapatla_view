@@ -9,6 +9,9 @@ export const getRouter = () => {
     routeTree,
     context: { queryClient },
     scrollRestoration: true,
+    // Every navigation animates through the View Transitions API (root
+    // cross-fade + shared project images; styles in styles.css).
+    defaultViewTransition: true,
     defaultPreloadStaleTime: 0,
     // Ship the query cache filled by route loaders during SSR to the browser,
     // so the first client render matches the server HTML (real CMS content,

@@ -6,6 +6,7 @@ import { ScrollPath } from "@/components/motion/ScrollPath";
 import { IntroLoader } from "@/components/motion/IntroLoader";
 import { DESKTOP_QUERY, useMediaQuery } from "@/hooks/useMediaQuery";
 import { PlutoWidget } from "@/components/pluto/PlutoWidget";
+import { MobilePluto } from "@/components/pluto/MobilePluto";
 import { DecorLeaves } from "@/components/sections/DecorLeaves";
 import { Nav } from "@/components/sections/Nav";
 import { Hero } from "@/components/sections/Hero";
@@ -64,6 +65,7 @@ function Portfolio() {
         <Contact contact={c.contact} />
       </main>
       <Footer contact={c.contact} />
+      <MobilePluto active={active} hints={c.hints} />
       <PlutoWidget />
     </div>
   );
