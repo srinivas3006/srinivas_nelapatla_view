@@ -1,3 +1,5 @@
+import { PAGE_CACHE_HEADERS } from "@/lib/page-cache";
+import { pageMeta, SITE_DESCRIPTION, SITE_TITLE } from "@/lib/site";
 import { useRef } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { ScrollPath } from "@/components/motion/ScrollPath";
@@ -20,23 +22,10 @@ import { portfolioContentQuery, usePortfolioContent, useProjects } from "@/lib/u
 import { DEFAULTS, type PortfolioContent } from "@/lib/portfolio-content";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Srinivas Nelapatla — Full Stack Developer" },
-      {
-        name: "description",
-        content:
-          "Portfolio of Srinivas Nelapatla — a Computer Science Engineer building clean, scalable & meaningful digital solutions.",
-      },
-      { property: "og:title", content: "Srinivas Nelapatla — Full Stack Developer" },
-      {
-        property: "og:description",
-        content: "Clean, scalable & meaningful digital solutions.",
-      },
-    ],
-  }),
+  head: () => pageMeta({ title: SITE_TITLE, description: SITE_DESCRIPTION, path: "/" }),
   // Prefetch CMS content so SSR renders it (see dehydrate/hydrate in router.tsx).
   loader: ({ context }) => context.queryClient.ensureQueryData(portfolioContentQuery),
+  headers: () => PAGE_CACHE_HEADERS,
   component: Portfolio,
 });
 

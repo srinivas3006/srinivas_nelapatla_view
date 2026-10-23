@@ -15,18 +15,21 @@ function mergeContent(rows: { key: string; value: unknown }[]): PortfolioContent
   return merged as PortfolioContent;
 }
 
+/** CMS content merged over defaults; falls back to defaults if the DB fails. */
+export async function loadPortfolioContent(): Promise<PortfolioContent> {
+  try {
+    const rows = await getSiteContent();
+    return Array.isArray(rows) ? mergeContent(rows) : DEFAULTS;
+  } catch (e) {
+    console.error("Failed to load portfolio content from DB, using defaults", e);
+    return DEFAULTS;
+  }
+}
+
 // Shared by useQuery and the route loaders that prefetch it during SSR.
 export const portfolioContentQuery = queryOptions({
   queryKey: ["site_content", "v2"],
-  queryFn: async (): Promise<PortfolioContent> => {
-    try {
-      const rows = await getSiteContent();
-      return Array.isArray(rows) ? mergeContent(rows) : DEFAULTS;
-    } catch (e) {
-      console.error("Failed to load portfolio content from DB, using defaults", e);
-      return DEFAULTS;
-    }
-  },
+  queryFn: loadPortfolioContent,
   staleTime: 1000 * 60 * 5, // 5 minutes
 });
 

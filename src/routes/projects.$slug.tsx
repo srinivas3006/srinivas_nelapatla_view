@@ -1,3 +1,6 @@
+import { responsiveImage } from "@/lib/image";
+import { PAGE_CACHE_HEADERS } from "@/lib/page-cache";
+import { pageMeta, SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import {
@@ -16,10 +19,19 @@ import { categoryLabel } from "@/lib/portfolio-content";
 import { projectMediaTransition } from "@/lib/motion";
 
 export const Route = createFileRoute("/projects/$slug")({
-  head: () => ({
-    meta: [{ title: "Project — Srinivas Nelapatla" }],
-  }),
+  // `loader` must precede `head` so TypeScript can infer loaderData.
   loader: ({ context }) => context.queryClient.ensureQueryData(portfolioContentQuery),
+  head: ({ loaderData, params }) => {
+    const project = loaderData?.projects.find((p) => p.slug === params.slug);
+    if (!project) return { meta: [{ title: `Project — ${SITE_NAME}` }] };
+    return pageMeta({
+      title: `${project.title} — ${SITE_NAME}`,
+      description: project.description || project.overview || SITE_DESCRIPTION,
+      path: `/projects/${project.slug}`,
+      image: project.image || undefined,
+    });
+  },
+  headers: () => PAGE_CACHE_HEADERS,
   notFoundComponent: () => (
     <div className="flex min-h-screen items-center justify-center px-6 text-center">
       <div>
@@ -121,7 +133,11 @@ function ProjectDetail() {
             className="mt-12 overflow-hidden rounded-3xl border border-border bg-card shadow-lift"
           >
             <img
-              src={project.image}
+              {...responsiveImage(
+                project.image,
+                [800, 1200, 1600],
+                "(min-width: 1024px) 1024px, 100vw",
+              )}
               alt={project.title}
               className="aspect-[16/9] w-full object-cover"
             />
@@ -217,7 +233,7 @@ function ProjectDetail() {
                   <div className="aspect-[4/3] overflow-hidden bg-secondary">
                     {o.image && (
                       <img
-                        src={o.image}
+                        {...responsiveImage(o.image, [400, 640], "(min-width: 768px) 33vw, 100vw")}
                         alt={o.title}
                         className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                       />

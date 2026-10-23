@@ -11,6 +11,10 @@
   NODE_VERSION = "24"
   NPM_FLAGS = "--no-audit --no-fund"
 
+# Image CDN may transform images uploaded to Supabase Storage (src/lib/image.ts).
+[images]
+  remote_images = ["https://[a-z0-9]+\\.supabase\\.co/storage/.*"]
+
 # Required environment variables (Site configuration → Environment variables):
 #   SUPABASE_URL               https://<project>.supabase.co
 #   SUPABASE_SERVICE_ROLE_KEY  server-only; never prefix with VITE_

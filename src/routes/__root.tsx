@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { Toaster } from "sonner";
 import { MotionProvider } from "@/components/motion/MotionProvider";
+import { pageMeta, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE } from "@/lib/site";
 
 const FONTS_CSS =
   "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@300;400;500;600;700&display=swap";
@@ -77,36 +78,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "srinivas_nelapatla" },
-      {
-        name: "description",
-        content:
-          "A premium, green-themed personal portfolio for a full-stack developer, guided by an intelligent assistant named Pluto.",
-      },
-      { name: "author", content: "Srinivas Nelapatla" },
-      { property: "og:title", content: "srinivas_nelapatla" },
-      {
-        property: "og:description",
-        content:
-          "A premium, green-themed personal portfolio for a full-stack developer, guided by an intelligent assistant named Pluto.",
-      },
+      { name: "author", content: SITE_NAME },
+      { name: "theme-color", content: "#457641" },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@srinivas" },
-      { name: "twitter:title", content: "srinivas_nelapatla" },
-      {
-        name: "twitter:description",
-        content:
-          "A premium, green-themed personal portfolio for a full-stack developer, guided by an intelligent assistant named Pluto.",
-      },
-      {
-        property: "og:image",
-        content: "/og-image.png",
-      },
-      {
-        name: "twitter:image",
-        content: "/og-image.png",
-      },
+      { property: "og:site_name", content: SITE_NAME },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { name: "twitter:card", content: "summary_large_image" },
+      // Defaults; routes override them with their own pageMeta (lib/site.ts).
+      ...pageMeta({ title: SITE_TITLE, description: SITE_DESCRIPTION, path: "/" }).meta,
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -115,9 +95,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "preload", as: "style", href: FONTS_CSS },
     ],
-    // Attach the font stylesheet without blocking first paint: text renders in
-    // the fallback font and swaps in (display=swap), instead of waiting ~1s on
-    // slow mobile connections.
     scripts: [
       // Netlify inserts an HTML comment (wrapped in newlines) into <head> on
       // free-tier sites. The stray whitespace text nodes make React's hydration
@@ -127,6 +104,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         children: `(function(){var h=document.head,n=h.firstChild;while(n){var x=n.nextSibling;if(n.nodeType===8||(n.nodeType===3&&!n.nodeValue.trim()))h.removeChild(n);n=x}})()`,
       },
+      // Attach the font stylesheet without blocking first paint: text renders in
+      // the fallback font and swaps in (display=swap), instead of waiting ~1s on
+      // slow mobile connections.
       {
         children: `(function(){var l=document.createElement("link");l.rel="stylesheet";l.href=${JSON.stringify(FONTS_CSS)};document.head.appendChild(l)})()`,
       },

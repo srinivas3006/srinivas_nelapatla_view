@@ -10,6 +10,12 @@ import { nitro } from "nitro/vite";
 const nitroPreset = process.env.NITRO_PRESET ?? (process.env.NETLIFY ? "netlify" : "vercel");
 
 export default defineConfig({
+  define: {
+    // Turns on Netlify Image CDN URLs (src/lib/image.ts) only for Netlify builds.
+    "import.meta.env.VITE_IMAGE_CDN": JSON.stringify(process.env.NETLIFY ? "netlify" : ""),
+    // Netlify's primary site URL, for absolute social-preview/canonical URLs.
+    "import.meta.env.VITE_SITE_URL": JSON.stringify(process.env.URL ?? ""),
+  },
   plugins: [
     nitro({ preset: nitroPreset }),
     tsconfigPaths({ projects: ["./tsconfig.json"] }),

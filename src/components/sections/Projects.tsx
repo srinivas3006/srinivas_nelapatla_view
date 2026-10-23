@@ -1,3 +1,4 @@
+import { responsiveImage } from "@/lib/image";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { motion, useMotionValue, useScroll, useTransform } from "motion/react";
@@ -175,7 +176,11 @@ function ProjectCard({ project: p }: { project: DbProject }) {
           >
             {p.image ? (
               <motion.img
-                src={p.image}
+                {...responsiveImage(
+                  p.image,
+                  [400, 640, 960],
+                  "(min-width: 1024px) 22rem, (min-width: 640px) 50vw, 100vw",
+                )}
                 alt={p.title}
                 loading="lazy"
                 whileHover={{ scale: 1.06 }}

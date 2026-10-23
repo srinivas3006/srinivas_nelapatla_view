@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { getSupabaseAdmin } from "../supabase.server";
 import { checkAdminAuth } from "./auth";
+import { purgePages } from "../page-cache.server";
 
 export const saveSiteContent = createServerFn({ method: "POST" })
   .validator(
@@ -30,6 +31,9 @@ export const saveSiteContent = createServerFn({ method: "POST" })
     if (error) {
       throw new Error(error.message);
     }
+
+    // Public pages are CDN-cached; drop them so the edit is live right away.
+    await purgePages();
 
     return { success: true };
   });

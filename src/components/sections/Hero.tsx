@@ -1,3 +1,4 @@
+import { responsiveImage } from "@/lib/image";
 import { useRef, type CSSProperties } from "react";
 import {
   motion,
@@ -87,7 +88,7 @@ export function Hero({ hero }: { hero: PortfolioContent["hero"] }) {
               className="animate-blob absolute inset-0 rounded-[50%_50%_45%_45%/55%_55%_45%_45%] bg-gradient-to-b from-accent/40 to-primary/20"
             />
             <motion.img
-              src={img}
+              {...responsiveImage(img, [360, 480, 720, 960], "(min-width: 1024px) 448px, 90vw")}
               alt="Srinivas Nelapatla"
               width={863}
               height={1200}
