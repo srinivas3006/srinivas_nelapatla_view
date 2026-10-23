@@ -119,6 +119,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     // the fallback font and swaps in (display=swap), instead of waiting ~1s on
     // slow mobile connections.
     scripts: [
+      // Netlify inserts an HTML comment (wrapped in newlines) into <head> on
+      // free-tier sites. The stray whitespace text nodes make React's hydration
+      // of the document fail (#418) and re-render the whole page. Drop comment
+      // and whitespace-only nodes from <head> before React hydrates; the served
+      // HTML is untouched.
+      {
+        children: `(function(){var h=document.head,n=h.firstChild;while(n){var x=n.nextSibling;if(n.nodeType===8||(n.nodeType===3&&!n.nodeValue.trim()))h.removeChild(n);n=x}})()`,
+      },
       {
         children: `(function(){var l=document.createElement("link");l.rel="stylesheet";l.href=${JSON.stringify(FONTS_CSS)};document.head.appendChild(l)})()`,
       },
@@ -132,7 +140,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    // suppressHydrationWarning: IntroLoader's inline script sets data-intro on
+    // <html> before React hydrates.
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
