@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll, useSpring } from "motion/react";
 import { DURATION, EASE_OUT } from "@/lib/motion";
-import { ArrowUpRight, Leaf, Menu, X } from "lucide-react";
+import { ArrowUpRight, Leaf, Menu, Moon, Sun, X } from "lucide-react";
+import { toggleTheme, useIsDark } from "@/lib/theme";
 import { Magnetic } from "@/components/motion/Interactive";
 import { NAV_LINKS } from "./nav-links";
 
@@ -65,6 +66,7 @@ export function Nav({ active }: { active: string }) {
             ))}
           </nav>
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Magnetic className="hidden sm:inline-block">
               <a
                 href="#contact"
@@ -118,5 +120,30 @@ export function Nav({ active }: { active: string }) {
         </AnimatePresence>
       </motion.header>
     </>
+  );
+}
+
+function ThemeToggle() {
+  const dark = useIsDark();
+  return (
+    <button
+      type="button"
+      onClick={toggleTheme}
+      aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
+      title={dark ? "Light theme" : "Dark theme"}
+      className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-border bg-card/70 text-foreground transition-colors hover:text-primary"
+    >
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.span
+          key={dark ? "moon" : "sun"}
+          initial={{ y: 14, rotate: -90, opacity: 0 }}
+          animate={{ y: 0, rotate: 0, opacity: 1 }}
+          exit={{ y: -14, rotate: 90, opacity: 0 }}
+          transition={{ duration: 0.25 }}
+        >
+          {dark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+        </motion.span>
+      </AnimatePresence>
+    </button>
   );
 }

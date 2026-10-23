@@ -7,6 +7,7 @@ import { saveSiteContent } from "../lib/api/content.server";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ImageUploader } from "../components/ImageUploader";
+import { MessagesTab } from "../components/admin/MessagesTab";
 import { PortfolioContent, DEFAULTS, ICON_OPTIONS } from "../lib/portfolio-content";
 
 export const Route = createFileRoute("/admin/")({
@@ -91,6 +92,7 @@ function AdminDashboard() {
               <TabsTrigger value="projects">Projects</TabsTrigger>
               <TabsTrigger value="contact">Contact</TabsTrigger>
               <TabsTrigger value="hints">Pluto Hints</TabsTrigger>
+              <TabsTrigger value="messages">Messages</TabsTrigger>
             </TabsList>
 
             {/* HERO TAB */}
@@ -237,6 +239,53 @@ function AdminDashboard() {
                       }
                       className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                     />
+                  </div>
+
+                  <div className="grid gap-3 pt-2 sm:grid-cols-2">
+                    <div>
+                      <label className="text-sm font-medium text-foreground">
+                        Resume button label
+                      </label>
+                      <input
+                        type="text"
+                        value={content.hero.secondaryCta?.label ?? ""}
+                        placeholder="Leave empty to hide the button"
+                        onChange={(e) =>
+                          setContent({
+                            ...content,
+                            hero: {
+                              ...content.hero,
+                              secondaryCta: {
+                                href: content.hero.secondaryCta?.href ?? "",
+                                label: e.target.value,
+                              },
+                            },
+                          })
+                        }
+                        className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-foreground">Resume link</label>
+                      <input
+                        type="text"
+                        value={content.hero.secondaryCta?.href ?? ""}
+                        placeholder="/srinivas-nelapatla-resume.pdf"
+                        onChange={(e) =>
+                          setContent({
+                            ...content,
+                            hero: {
+                              ...content.hero,
+                              secondaryCta: {
+                                label: content.hero.secondaryCta?.label ?? "",
+                                href: e.target.value,
+                              },
+                            },
+                          })
+                        }
+                        className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1185,6 +1234,11 @@ function AdminDashboard() {
                   </div>
                 ))}
               </div>
+            </TabsContent>
+
+            {/* MESSAGES TAB — contact form inbox (not part of Save Changes) */}
+            <TabsContent value="messages" className="focus:outline-none">
+              <MessagesTab />
             </TabsContent>
           </Tabs>
         </div>

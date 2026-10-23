@@ -12,6 +12,7 @@ import appCss from "../styles.css?url";
 import { Toaster } from "sonner";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import { pageMeta, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE } from "@/lib/site";
+import { THEME_SCRIPT } from "@/lib/theme";
 
 const FONTS_CSS =
   "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@300;400;500;600;700&display=swap";
@@ -96,6 +97,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preload", as: "style", href: FONTS_CSS },
     ],
     scripts: [
+      // Apply the saved/OS colour theme before first paint (no light flash).
+      { children: THEME_SCRIPT },
       // Netlify inserts an HTML comment (wrapped in newlines) into <head> on
       // free-tier sites. The stray whitespace text nodes make React's hydration
       // of the document fail (#418) and re-render the whole page. Drop comment
@@ -120,8 +123,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    // suppressHydrationWarning: IntroLoader's inline script sets data-intro on
-    // <html> before React hydrates.
+    // suppressHydrationWarning: inline scripts set data-intro (IntroLoader) and the
+    // .dark class (THEME_SCRIPT) on <html> before React hydrates.
     <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />

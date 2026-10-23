@@ -14,6 +14,7 @@ import plutoSit from "@/assets/pluto-sit.webp";
 import { SECTION_IDS } from "@/components/sections/nav-links";
 import { SPRING } from "@/lib/motion";
 import { pointer, useFinePointer } from "@/lib/pointer";
+import { useIsDark } from "@/lib/theme";
 
 type Point = { x: number; y: number };
 type Geometry = { width: number; height: number; d: string };
@@ -233,6 +234,7 @@ export function ScrollPath({ containerRef }: { containerRef: RefObject<HTMLEleme
   // Pluto watches the cursor: his head tilts toward it, and he perks up and
   // says hi when it comes close. Pluto's feet are at (px, py) in page space.
   const finePointer = useFinePointer();
+  const dark = useIsDark();
   const gaze = useSpring(0, SPRING.soft);
   const [near, setNear] = useState(false);
   const nearRef = useRef(false);
@@ -308,7 +310,9 @@ export function ScrollPath({ containerRef }: { containerRef: RefObject<HTMLEleme
               {/* Idle life while sitting: breathing plus an occasional curious
                   head tilt (paused while the cursor is close). */}
               <div className={`origin-bottom ${running ? "" : "animate-breathe"}`}>
-                <div className={`origin-bottom ${running || near ? "" : "animate-curious"}`}>
+                <div
+                  className={`origin-bottom ${running || near || dark ? "" : "animate-curious"}`}
+                >
                   <motion.img
                     src={plutoSit}
                     width={54}
@@ -331,6 +335,27 @@ export function ScrollPath({ containerRef }: { containerRef: RefObject<HTMLEleme
                   className="absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-card px-3 py-1 font-display text-xs text-foreground shadow-soft ring-1 ring-border/60"
                 >
                   Woof! 🐾
+                </motion.span>
+              )}
+              {/* Night mode: Pluto naps while sitting, until the cursor wakes him. */}
+              {dark && !running && !near && (
+                <motion.span
+                  key="zzz"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="pointer-events-none absolute -top-8 left-[62%] flex gap-0.5 font-display text-sm font-semibold text-primary"
+                >
+                  {["z", "z", "Z"].map((z, i) => (
+                    <motion.span
+                      key={i}
+                      animate={{ y: [0, -10, -16], opacity: [0, 1, 0] }}
+                      transition={{ duration: 2.4, repeat: Infinity, delay: i * 0.6 }}
+                      style={{ fontSize: 10 + i * 3 }}
+                    >
+                      {z}
+                    </motion.span>
+                  ))}
                 </motion.span>
               )}
             </AnimatePresence>

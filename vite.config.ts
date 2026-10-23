@@ -44,7 +44,7 @@ export default defineConfig({
   },
   server: {
     watch: {
-      ignored: ["**/*.pdf", "**/srinivas_nelapatla.pdf"],
+      ignored: ["**/*.pdf"],
     },
   },
 });

@@ -36,25 +36,25 @@ export function PlutoInlineGreeting() {
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => handleRoleSelect("recruiter")}
-            className="px-3 py-1.5 text-xs font-medium rounded-full bg-white border border-primary/30 text-secondary hover:bg-primary hover:text-background hover:border-primary transition-all"
+            className="px-3 py-1.5 text-xs font-medium rounded-full bg-background border border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
           >
             👔 I'm hiring / reviewing candidates
           </button>
           <button
             onClick={() => handleRoleSelect("client")}
-            className="px-3 py-1.5 text-xs font-medium rounded-full bg-white border border-primary/30 text-secondary hover:bg-primary hover:text-background hover:border-primary transition-all"
+            className="px-3 py-1.5 text-xs font-medium rounded-full bg-background border border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
           >
             🤝 I'm looking to hire a freelancer
           </button>
           <button
             onClick={() => handleRoleSelect("developer")}
-            className="px-3 py-1.5 text-xs font-medium rounded-full bg-white border border-primary/30 text-secondary hover:bg-primary hover:text-background hover:border-primary transition-all"
+            className="px-3 py-1.5 text-xs font-medium rounded-full bg-background border border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
           >
             💻 I'm a fellow developer
           </button>
           <button
             onClick={() => handleRoleSelect("explorer")}
-            className="px-3 py-1.5 text-xs font-medium rounded-full bg-white border border-primary/30 text-secondary hover:bg-primary hover:text-background hover:border-primary transition-all"
+            className="px-3 py-1.5 text-xs font-medium rounded-full bg-background border border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
           >
             👀 Just exploring
           </button>

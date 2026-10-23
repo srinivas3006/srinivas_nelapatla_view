@@ -12,7 +12,7 @@ import {
   useVelocity,
   wrap,
 } from "motion/react";
-import { ArrowRight, MousePointer2, Rocket } from "lucide-react";
+import { ArrowRight, Download, MousePointer2, Rocket } from "lucide-react";
 import { Magnetic } from "@/components/motion/Interactive";
 import { useParallax } from "@/lib/pointer";
 import { PlutoInlineGreeting } from "@/components/pluto/PlutoInlineGreeting";
@@ -67,6 +67,18 @@ export function Hero({ hero }: { hero: PortfolioContent["hero"] }) {
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </a>
             </Magnetic>
+            {hero.secondaryCta?.label && hero.secondaryCta.href && (
+              <Magnetic strength={0.25}>
+                <a
+                  href={hero.secondaryCta.href}
+                  download={hero.secondaryCta.href.endsWith(".pdf") || undefined}
+                  className="group inline-flex items-center gap-2 rounded-full border border-primary/40 px-6 py-3 text-sm font-medium text-primary transition-colors hover:bg-primary/5"
+                >
+                  {hero.secondaryCta.label}
+                  <Download className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />
+                </a>
+              </Magnetic>
+            )}
           </div>
           <PlutoInlineGreeting />
           <div className="mt-16 hidden flex-col items-center gap-2 text-xs text-muted-foreground sm:flex">

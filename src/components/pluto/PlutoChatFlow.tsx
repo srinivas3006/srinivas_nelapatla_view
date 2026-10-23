@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "../ui/button";
 import { usePluto, VisitorRole } from "../../lib/use-pluto";
+import { usePortfolioContent } from "../../lib/use-portfolio";
+import { askPluto } from "../../lib/api/pluto.server";
 import { motion, AnimatePresence } from "motion/react";
 import { Bot, User, X, Send } from "lucide-react";
 
@@ -16,6 +18,8 @@ export function PlutoChatFlow({ onClose }: { onClose?: () => void }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [inputText, setInputText] = useState("");
+  const [thinking, setThinking] = useState(false);
+  const { data: content } = usePortfolioContent();
 
   useEffect(() => {
     const handleNudge = (e: any) => {
@@ -154,6 +158,15 @@ export function PlutoChatFlow({ onClose }: { onClose?: () => void }) {
     );
   };
 
+  // Facts for scripted replies come from the portfolio content, never hardcoded.
+  const topSkills = () =>
+    (content?.skills ?? [])
+      .flatMap((g) => g.items.map((i) => i.name))
+      .slice(0, 6)
+      .join(", ");
+  const firstProjectTitle = () =>
+    content?.projects.find((p) => p.is_published)?.title ?? "the featured projects";
+
   const handleRecruiterFlow = (choice: string) => {
     const userTexts = {
       skills: "Show me his top 3 skills",
@@ -163,18 +176,15 @@ export function PlutoChatFlow({ onClose }: { onClose?: () => void }) {
     addUserMessage(userTexts[choice as keyof typeof userTexts]);
 
     if (choice === "skills") {
-      addPlutoMessage(
-        "He's strongest in React/TypeScript, Node.js APIs, and backend work with Supabase — want me to show a project that proves it?",
-        [
-          {
-            label: "Yes, show me",
-            action: () => {
-              addUserMessage("Yes, show me");
-              addPlutoMessage("Check out the Pluto Guided Showcase in the Projects section!");
-            },
+      addPlutoMessage(`His core skills: ${topSkills()}. Want to see a project that uses them?`, [
+        {
+          label: "Yes, show me",
+          action: () => {
+            addUserMessage("Yes, show me");
+            addPlutoMessage(`Take a look at ${firstProjectTitle()} in the Projects section!`);
           },
-        ],
-      );
+        },
+      ]);
     } else if (choice === "project") {
       addPlutoMessage(
         "His most complex project is this portfolio itself! It features a custom design system, interactive AI guide, and TanStack start. Scroll down to see it.",
@@ -184,7 +194,10 @@ export function PlutoChatFlow({ onClose }: { onClose?: () => void }) {
         {
           label: "Download PDF",
           action: () => {
-            window.open("/resume.pdf", "_blank");
+            window.open(
+              content?.hero.secondaryCta?.href || "/srinivas-nelapatla-resume.pdf",
+              "_blank",
+            );
           },
         },
       ]);
@@ -201,16 +214,16 @@ export function PlutoChatFlow({ onClose }: { onClose?: () => void }) {
 
     if (choice === "project") {
       addPlutoMessage(
-        "Here's a business website he built — fully responsive, fast-loading. Want his contact details?",
+        `Have a look at ${firstProjectTitle()} in the Projects section. Want his contact details?`,
         [{ label: "Yes, contact details", action: () => handleClientFlow("contact") }],
       );
     } else if (choice === "communication") {
       addPlutoMessage(
-        "He prefers Slack and email for asynchronous updates, and Zoom for weekly syncs. Very transparent about blockers.",
+        `The quickest way to talk working style is to ask him directly — ${content?.contact.email ?? "the contact form"} reaches him.`,
       );
     } else if (choice === "contact") {
       addPlutoMessage(
-        "You can reach him directly at his email: [insert email] or via the contact form at the bottom of the page.",
+        `You can reach him directly at ${content?.contact.email} or via the contact form at the bottom of the page.`,
       );
     }
   };
@@ -224,14 +237,12 @@ export function PlutoChatFlow({ onClose }: { onClose?: () => void }) {
     addUserMessage(userTexts[choice as keyof typeof userTexts]);
 
     if (choice === "stack") {
-      addPlutoMessage(
-        "Currently heavily using React 19, Tailwind CSS, TanStack Router/Start, and Supabase. The full stack is listed below.",
-      );
+      addPlutoMessage(`His stack: ${topSkills()}. The full list is in the Skills section.`);
     } else if (choice === "repos") {
-      addPlutoMessage("Check out his GitHub profile: github.com/srinivas3006");
+      addPlutoMessage(`Check out his GitHub profile: ${content?.contact.github}`);
     } else if (choice === "challenges") {
       addPlutoMessage(
-        "One project uses an Agentic AI workflow to generate code dynamically. It required tricky state management to handle tool calls.",
+        `Each project page covers the problem, the approach and the tech decisions — try ${firstProjectTitle()} in the Projects section.`,
       );
     }
   };
@@ -259,15 +270,46 @@ export function PlutoChatFlow({ onClose }: { onClose?: () => void }) {
     }
   };
 
-  const handleInputSubmit = (e: React.FormEvent) => {
+  const handleInputSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputText.trim()) return;
+    const text = inputText.trim();
+    if (!text || thinking) return;
 
-    const query = inputText.toLowerCase();
-    addUserMessage(inputText);
+    addUserMessage(text);
     setInputText("");
 
-    setTimeout(() => {
+    // "Ask Pluto anything": answered by Claude from the portfolio content.
+    const history = [...messages, { sender: "user" as const, text }]
+      .filter((m) => m.text.trim())
+      .map((m) => ({
+        role: m.sender === "user" ? ("user" as const) : ("assistant" as const),
+        content: m.text.slice(0, 1000),
+      }));
+    setThinking(true);
+    try {
+      const result = await askPluto({ data: { messages: history } });
+      if ("reply" in result) {
+        setMessages((prev) => [
+          ...prev,
+          { id: Date.now().toString(), sender: "pluto", text: result.reply },
+        ]);
+        return;
+      }
+    } catch {
+      // Fall through to the scripted replies below.
+    } finally {
+      setThinking(false);
+    }
+    scriptedReply(text.toLowerCase());
+  };
+
+  /** Keyword replies used when the AI assistant isn't configured or available. */
+  const scriptedReply = (query: string) => {
+    const skillNames = (content?.skills ?? [])
+      .flatMap((g) => g.items.map((i) => i.name))
+      .slice(0, 6);
+    const email = content?.contact.email;
+    {
       if (
         query.includes("react") ||
         query.includes("skill") ||
@@ -275,7 +317,7 @@ export function PlutoChatFlow({ onClose }: { onClose?: () => void }) {
         query.includes("tech")
       ) {
         addPlutoMessage(
-          "Srinivas is highly skilled in React, TypeScript, Node.js, and modern CSS frameworks like Tailwind. You can see his full stack in the Skills section!",
+          `His toolkit includes ${skillNames.join(", ")} and more — see the full list in the Skills section!`,
         );
       } else if (
         query.includes("contact") ||
@@ -284,7 +326,7 @@ export function PlutoChatFlow({ onClose }: { onClose?: () => void }) {
         query.includes("hire")
       ) {
         addPlutoMessage(
-          "You can reach him directly at hello@srinivas.dev or via the contact form at the bottom of the page.",
+          `You can reach him directly at ${email} or via the contact form at the bottom of the page.`,
         );
       } else if (query.includes("resume") || query.includes("cv")) {
         handleRecruiterFlow("resume");
@@ -295,11 +337,11 @@ export function PlutoChatFlow({ onClose }: { onClose?: () => void }) {
         query.includes("built")
       ) {
         addPlutoMessage(
-          "Scroll down to the 'Featured Projects' section to see what he's been building. His latest project features this exact AI assistant!",
+          "Scroll down to the 'Featured Projects' section to see what he's been building!",
         );
       } else if (query.includes("github") || query.includes("repo") || query.includes("code")) {
         addPlutoMessage(
-          "Check out his GitHub profile: github.com/srinivas3006 to see his open source work and live stats.",
+          `Check out his GitHub profile: ${content?.contact.github} to see his work.`,
         );
       } else {
         addPlutoMessage(
@@ -310,7 +352,7 @@ export function PlutoChatFlow({ onClose }: { onClose?: () => void }) {
           ],
         );
       }
-    }, 400);
+    }
   };
 
   return (
@@ -355,7 +397,7 @@ export function PlutoChatFlow({ onClose }: { onClose?: () => void }) {
                   {msg.sender === "user" ? <User size={12} /> : <Bot size={12} />}
                 </div>
                 <div
-                  className={`p-3 rounded-2xl text-sm ${msg.sender === "user" ? "bg-secondary text-secondary-foreground rounded-br-sm" : "bg-white text-foreground rounded-bl-sm shadow-sm"}`}
+                  className={`p-3 rounded-2xl text-sm ${msg.sender === "user" ? "bg-secondary text-secondary-foreground rounded-br-sm" : "bg-background text-foreground rounded-bl-sm shadow-sm"}`}
                 >
                   {msg.text}
                 </div>
@@ -381,12 +423,27 @@ export function PlutoChatFlow({ onClose }: { onClose?: () => void }) {
             </motion.div>
           ))}
         </AnimatePresence>
+        {thinking && (
+          <div className="flex items-center gap-2" aria-live="polite">
+            <span className="sr-only">Pluto is typing</span>
+            <div className="flex gap-1 rounded-2xl rounded-tl-none bg-background px-3 py-3 shadow-sm">
+              {[0, 1, 2].map((d) => (
+                <motion.span
+                  key={d}
+                  animate={{ y: [0, -4, 0], opacity: [0.4, 1, 0.4] }}
+                  transition={{ duration: 0.9, repeat: Infinity, delay: d * 0.15 }}
+                  className="h-1.5 w-1.5 rounded-full bg-primary"
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Free-form Input */}
       <form
         onSubmit={handleInputSubmit}
-        className="border-t border-muted-foreground/20 bg-white p-3 flex gap-2"
+        className="border-t border-muted-foreground/20 bg-background p-3 flex gap-2"
       >
         <input
           type="text"
@@ -397,7 +454,7 @@ export function PlutoChatFlow({ onClose }: { onClose?: () => void }) {
         />
         <button
           type="submit"
-          disabled={!inputText.trim()}
+          disabled={!inputText.trim() || thinking}
           className="shrink-0 flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-white disabled:opacity-50 transition-opacity"
         >
           <Send size={14} />

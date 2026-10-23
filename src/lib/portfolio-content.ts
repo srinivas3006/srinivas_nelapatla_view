@@ -122,6 +122,7 @@ export const DEFAULT_HERO: HeroContent = {
   subhead:
     "A motivated Computer Science graduate with hands-on experience in building scalable backend systems and web applications.",
   primaryCta: { label: "Explore My Work", href: "#work" },
+  secondaryCta: { label: "Download Resume", href: "/srinivas-nelapatla-resume.pdf" },
   exploring: ["Django REST", "Vue.js", "AI Tools"],
   plutoIntroTitle: "Hi! I'm Pluto",
   plutoIntroSub: "I'll be your guide today!",
