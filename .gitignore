@@ -39,3 +39,6 @@ dist-ssr
 
 # Netlify build output
 .netlify
+
+# Lighthouse CI reports
+.lighthouseci

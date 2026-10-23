@@ -22,8 +22,9 @@ export function PlutoChatFlow({ onClose }: { onClose?: () => void }) {
   const { data: content } = usePortfolioContent();
 
   useEffect(() => {
-    const handleNudge = (e: any) => {
-      const msg = e.detail?.message || "Before you go — want his resume or contact info?";
+    const handleNudge = (e: Event) => {
+      const detail = (e as CustomEvent<{ message?: string | null }>).detail;
+      const msg = detail?.message || "Before you go — want his resume or contact info?";
       addPlutoMessage(msg, [
         { label: "Yes, email", action: () => handleClientFlow("contact") },
         { label: "View Resume", action: () => handleRecruiterFlow("resume") },

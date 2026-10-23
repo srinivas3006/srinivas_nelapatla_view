@@ -141,7 +141,9 @@ function AdminDashboard() {
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-foreground">Italic Words (comma separated)</label>
+                    <label className="text-sm font-medium text-foreground">
+                      Italic Words (comma separated)
+                    </label>
                     <input
                       type="text"
                       value={content.hero.italicWords.join(", ")}
@@ -149,8 +151,11 @@ function AdminDashboard() {
                         const words = e.target.value.split(",").map((s) => s.trim());
                         setContent({
                           ...content,
-                          hero: { ...content.hero, italicWords: [words[0] || "", words[1] || "", words[2] || ""] },
-                        })
+                          hero: {
+                            ...content.hero,
+                            italicWords: [words[0] || "", words[1] || "", words[2] || ""],
+                          },
+                        });
                       }}
                       className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                     />
@@ -172,14 +177,22 @@ function AdminDashboard() {
                 </div>
                 <div className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium text-foreground">Exploring Topics (comma separated)</label>
+                    <label className="text-sm font-medium text-foreground">
+                      Exploring Topics (comma separated)
+                    </label>
                     <input
                       type="text"
                       value={content.hero.exploring.join(", ")}
                       onChange={(e) =>
                         setContent({
                           ...content,
-                          hero: { ...content.hero, exploring: e.target.value.split(",").map((s) => s.trim()).filter(Boolean) },
+                          hero: {
+                            ...content.hero,
+                            exploring: e.target.value
+                              .split(",")
+                              .map((s) => s.trim())
+                              .filter(Boolean),
+                          },
                         })
                       }
                       className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
@@ -187,7 +200,9 @@ function AdminDashboard() {
                   </div>
                   <div className="flex gap-2">
                     <div className="flex-1">
-                      <label className="text-sm font-medium text-foreground">Pluto Intro Title</label>
+                      <label className="text-sm font-medium text-foreground">
+                        Pluto Intro Title
+                      </label>
                       <input
                         type="text"
                         value={content.hero.plutoIntroTitle}
@@ -201,7 +216,9 @@ function AdminDashboard() {
                       />
                     </div>
                     <div className="flex-1">
-                      <label className="text-sm font-medium text-foreground">Pluto Intro Subtitle</label>
+                      <label className="text-sm font-medium text-foreground">
+                        Pluto Intro Subtitle
+                      </label>
                       <input
                         type="text"
                         value={content.hero.plutoIntroSub}
@@ -351,7 +368,10 @@ function AdminDashboard() {
                   value={content.about.quoteAuthor}
                   placeholder="Author"
                   onChange={(e) =>
-                    setContent({ ...content, about: { ...content.about, quoteAuthor: e.target.value } })
+                    setContent({
+                      ...content,
+                      about: { ...content.about, quoteAuthor: e.target.value },
+                    })
                   }
                   className="mt-2 w-full md:w-1/3 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                 />
@@ -361,7 +381,10 @@ function AdminDashboard() {
                 <label className="text-sm font-medium text-foreground">About Cards</label>
                 <div className="grid gap-4 mt-2 md:grid-cols-3">
                   {content.about.cards.map((card, idx) => (
-                    <div key={idx} className="p-4 rounded-lg border border-border bg-muted/20 space-y-3">
+                    <div
+                      key={idx}
+                      className="p-4 rounded-lg border border-border bg-muted/20 space-y-3"
+                    >
                       <div>
                         <label className="text-xs text-muted-foreground">Icon</label>
                         <select
@@ -369,12 +392,17 @@ function AdminDashboard() {
                           onChange={(e) => {
                             const newCards = [...content.about.cards];
                             newCards[idx].icon = e.target.value;
-                            setContent({ ...content, about: { ...content.about, cards: newCards } });
+                            setContent({
+                              ...content,
+                              about: { ...content.about, cards: newCards },
+                            });
                           }}
                           className="w-full bg-background border border-input rounded-md px-2 py-1 text-sm mt-1"
                         >
                           {ICON_OPTIONS.map((opt) => (
-                            <option key={opt} value={opt}>{opt}</option>
+                            <option key={opt} value={opt}>
+                              {opt}
+                            </option>
                           ))}
                         </select>
                       </div>
@@ -386,7 +414,10 @@ function AdminDashboard() {
                           onChange={(e) => {
                             const newCards = [...content.about.cards];
                             newCards[idx].title = e.target.value;
-                            setContent({ ...content, about: { ...content.about, cards: newCards } });
+                            setContent({
+                              ...content,
+                              about: { ...content.about, cards: newCards },
+                            });
                           }}
                           className="w-full bg-background border border-input rounded-md px-2 py-1 text-sm mt-1"
                         />
@@ -399,7 +430,10 @@ function AdminDashboard() {
                           onChange={(e) => {
                             const newCards = [...content.about.cards];
                             newCards[idx].sub = e.target.value;
-                            setContent({ ...content, about: { ...content.about, cards: newCards } });
+                            setContent({
+                              ...content,
+                              about: { ...content.about, cards: newCards },
+                            });
                           }}
                           className="w-full bg-background border border-input rounded-md px-2 py-1 text-sm mt-1"
                         />
@@ -416,7 +450,10 @@ function AdminDashboard() {
                     onClick={() => {
                       setContent({
                         ...content,
-                        about: { ...content.about, stats: [...content.about.stats, { n: "0", l: "New Stat" }] }
+                        about: {
+                          ...content.about,
+                          stats: [...content.about.stats, { n: "0", l: "New Stat" }],
+                        },
                       });
                     }}
                     className="flex items-center gap-1 text-xs text-primary hover:underline"
@@ -426,7 +463,10 @@ function AdminDashboard() {
                 </div>
                 <div className="grid gap-4 mt-2 md:grid-cols-4">
                   {content.about.stats.map((stat, idx) => (
-                    <div key={idx} className="flex gap-2 p-3 rounded-lg border border-border bg-muted/20 relative group">
+                    <div
+                      key={idx}
+                      className="flex gap-2 p-3 rounded-lg border border-border bg-muted/20 relative group"
+                    >
                       <button
                         onClick={() => {
                           const newStats = [...content.about.stats];
@@ -622,7 +662,9 @@ function AdminDashboard() {
                           className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                         >
                           {ICON_OPTIONS.map((opt) => (
-                            <option key={opt} value={opt}>{opt}</option>
+                            <option key={opt} value={opt}>
+                              {opt}
+                            </option>
                           ))}
                         </select>
                       </div>
@@ -722,7 +764,9 @@ function AdminDashboard() {
                           className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                         >
                           {ICON_OPTIONS.map((opt) => (
-                            <option key={opt} value={opt}>{opt}</option>
+                            <option key={opt} value={opt}>
+                              {opt}
+                            </option>
                           ))}
                         </select>
                       </div>
@@ -965,7 +1009,9 @@ function AdminDashboard() {
                         />
                       </div>
                       <div className="md:col-span-2">
-                        <label className="text-xs font-medium text-foreground">Problem Statement</label>
+                        <label className="text-xs font-medium text-foreground">
+                          Problem Statement
+                        </label>
                         <textarea
                           value={proj.problem}
                           onChange={(e) => {
@@ -989,7 +1035,9 @@ function AdminDashboard() {
                         />
                       </div>
                       <div className="md:col-span-2">
-                        <label className="text-xs font-medium text-foreground">Tech Decisions</label>
+                        <label className="text-xs font-medium text-foreground">
+                          Tech Decisions
+                        </label>
                         <textarea
                           value={proj.tech_decisions}
                           onChange={(e) => {
@@ -1001,26 +1049,36 @@ function AdminDashboard() {
                         />
                       </div>
                       <div>
-                        <label className="text-xs font-medium text-foreground">Stack (comma separated)</label>
+                        <label className="text-xs font-medium text-foreground">
+                          Stack (comma separated)
+                        </label>
                         <input
                           type="text"
                           value={proj.stack.join(", ")}
                           onChange={(e) => {
                             const newP = [...content.projects];
-                            newP[idx].stack = e.target.value.split(",").map((s) => s.trim()).filter(Boolean);
+                            newP[idx].stack = e.target.value
+                              .split(",")
+                              .map((s) => s.trim())
+                              .filter(Boolean);
                             setContent({ ...content, projects: newP });
                           }}
                           className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                         />
                       </div>
                       <div>
-                        <label className="text-xs font-medium text-foreground">Highlights (comma separated)</label>
+                        <label className="text-xs font-medium text-foreground">
+                          Highlights (comma separated)
+                        </label>
                         <input
                           type="text"
                           value={proj.highlights.join(", ")}
                           onChange={(e) => {
                             const newP = [...content.projects];
-                            newP[idx].highlights = e.target.value.split(",").map((s) => s.trim()).filter(Boolean);
+                            newP[idx].highlights = e.target.value
+                              .split(",")
+                              .map((s) => s.trim())
+                              .filter(Boolean);
                             setContent({ ...content, projects: newP });
                           }}
                           className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
@@ -1234,7 +1292,9 @@ function AdminDashboard() {
               <div className="grid gap-4 md:grid-cols-2">
                 {Object.entries(content.hints).map(([key, val]) => (
                   <div key={key}>
-                    <label className="text-sm font-medium text-foreground capitalize">{key} Hint</label>
+                    <label className="text-sm font-medium text-foreground capitalize">
+                      {key} Hint
+                    </label>
                     <textarea
                       value={val}
                       onChange={(e) =>

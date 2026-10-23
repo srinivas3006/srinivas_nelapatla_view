@@ -1,0 +1,60 @@
+# Runs on every push to main and every pull request. Netlify deploys
+# independently; this catches broken builds and regressions early.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci --no-audit --no-fund
+
+      - name: Type-check
+        run: npx tsc --noEmit -p .
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build (Netlify output)
+        run: npm run build
+        env:
+          NETLIFY: "true"
+
+      - name: Build (local server for checks)
+        run: npm run build
+        env:
+          NITRO_PRESET: node-server
+
+      - name: Smoke test key routes
+        run: |
+          PORT=3000 node .output/server/index.mjs &
+          SERVER=$!
+          for i in $(seq 1 30); do curl -fs -o /dev/null http://localhost:3000/ && break; sleep 1; done
+          for path in / /projects/uv-homez /sitemap.xml /robots.txt /og-image.png /admin/login; do
+            curl -fsS -o /dev/null -w "%{http_code} $path\n" "http://localhost:3000$path"
+          done
+          kill $SERVER
+
+      # Performance budget: fails on accessibility/SEO regressions, warns on
+      # performance (CI machines are noisy). Reports are kept as an artifact.
+      - name: Lighthouse budget
+        run: npx -y @lhci/cli@0.15.1 autorun
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci/
+          if-no-files-found: ignore

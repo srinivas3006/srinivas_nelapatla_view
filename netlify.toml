@@ -19,3 +19,11 @@
 #   SUPABASE_URL               https://<project>.supabase.co
 #   SUPABASE_SERVICE_ROLE_KEY  server-only; never prefix with VITE_
 #   ADMIN_PASSWORD             password for /admin
+#
+# Optional:
+#   ANTHROPIC_API_KEY          enables "Ask Pluto anything" (Claude)
+#   PLUTO_MODEL                model override, default claude-opus-5-5
+#   RESEND_API_KEY             emails you each contact-form message...
+#   CONTACT_NOTIFY_EMAIL       ...to this address
+#   CONTACT_FROM_EMAIL         sender, default "Portfolio <onboarding@resend.dev>"
+#   VITE_GOATCOUNTER_CODE      cookieless analytics (code.goatcounter.com)

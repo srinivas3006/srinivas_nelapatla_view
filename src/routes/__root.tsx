@@ -13,6 +13,7 @@ import { Toaster } from "sonner";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import { pageMeta, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE } from "@/lib/site";
 import { THEME_SCRIPT } from "@/lib/theme";
+import { analyticsScripts, useAnalyticsPageviews } from "@/lib/analytics";
 
 const FONTS_CSS =
   "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@300;400;500;600;700&display=swap";
@@ -97,6 +98,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preload", as: "style", href: FONTS_CSS },
     ],
     scripts: [
+      ...analyticsScripts,
       // Apply the saved/OS colour theme before first paint (no light flash).
       { children: THEME_SCRIPT },
       // Netlify inserts an HTML comment (wrapped in newlines) into <head> on
@@ -139,6 +141,7 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  useAnalyticsPageviews();
 
   return (
     <QueryClientProvider client={queryClient}>
